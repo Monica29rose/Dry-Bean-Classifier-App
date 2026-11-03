@@ -1,0 +1,60 @@
+duplicate rows removed: 68 (mention in README pre-processing)
+=== DATASET SUMMARY (paste into README section b) ===
+rows = 13543   features = 16   target = 'Class'
+requirement check -> rows >= 500: True | features >= 12: True
+class distribution:
+ Class
+DERMASON    3546
+SIRA        2636
+SEKER       2027
+HOROZ       1860
+CALI        1630
+BARBUNYA    1322
+BOMBAY       522
+columns with missing values: none
+
+train rows = 10834   test rows (saved to test_data.csv) = 2709
+
+--- Logistic Regression: grid search (5-fold CV, scoring = MCC) ---
+WARNING [Logistic Regression] C = 1000 is at a grid edge (0.01..1000).
+   -> widen the grid, or show in model/cv_results.csv that the score is flat there.
+best params: {'C': 1000} | test MCC = 0.9023 | file = 0.0 MB
+
+--- Decision Tree: grid search (5-fold CV, scoring = MCC) ---
+best params: {'criterion': 'entropy', 'max_depth': 8, 'min_samples_leaf': 5} | test MCC = 0.8893 | file = 0.0 MB
+
+--- KNN: grid search (5-fold CV, scoring = MCC) ---
+best params: {'n_neighbors': 25, 'weights': 'distance'} | test MCC = 0.9005 | file = 1.3 MB
+
+--- Naive Bayes: grid search (5-fold CV, scoring = MCC) ---
+WARNING [Naive Bayes] var_smoothing = 1e-14 is at a grid edge (1e-14..1e-05).
+   -> widen the grid, or show in model/cv_results.csv that the score is flat there.
+best params: {'var_smoothing': 1e-14} | test MCC = 0.8762 | file = 0.0 MB
+
+--- Support Vector Machine: grid search (5-fold CV, scoring = MCC) ---
+best params: {'C': 10, 'gamma': 'scale'} | test MCC = 0.9076 | file = 0.3 MB
+
+=== COMPARISON TABLE ON THE HOLD-OUT TEST SET (paste into README section d) ===
+| ML Model Name | Accuracy | AUC | Precision | Recall | F1 | MCC |
+|---|---|---|---|---|---|---|
+| Logistic Regression | 0.9192 | 0.9948 | 0.9309 | 0.9304 | 0.9305 | 0.9023 |
+| Decision Tree | 0.9085 | 0.9774 | 0.9203 | 0.9163 | 0.9181 | 0.8893 |
+| KNN | 0.9177 | 0.9918 | 0.932 | 0.9277 | 0.9294 | 0.9005 |
+| Naive Bayes | 0.897 | 0.9911 | 0.9081 | 0.9082 | 0.9072 | 0.8762 |
+| Support Vector Machine | 0.9236 | 0.9944 | 0.9356 | 0.934 | 0.9347 | 0.9076 |
+
+=== EXTRA EVIDENCE FOR YOUR OBSERVATIONS ===
+| ML Model Name | CV MCC (train) | Train Acc | Accuracy | Fit time (s) |
+|---|---|---|---|---|
+| Logistic Regression | 0.9104 | 0.9276 | 0.9192 | 21.3 |
+| Decision Tree | 0.8938 | 0.9388 | 0.9085 | 14.2 |
+| KNN | 0.9099 | 1.0 | 0.9177 | 7.0 |
+| Naive Bayes | 0.8756 | 0.8972 | 0.897 | 1.8 |
+| Support Vector Machine | 0.9186 | 0.9397 | 0.9236 | 49.7 |
+
+Saved models + metadata to model
+Paste these lines into requirements.txt (they pin the libraries that wrote the models):
+scikit-learn==1.9.1
+numpy==2.5.4
+pandas==2.2.3
+joblib==1.4.2

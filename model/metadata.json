@@ -1,0 +1,99 @@
+{
+  "target": "Class",
+  "classes": [
+    "BARBUNYA",
+    "BOMBAY",
+    "CALI",
+    "DERMASON",
+    "HOROZ",
+    "SEKER",
+    "SIRA"
+  ],
+  "averaging": "macro",
+  "positive_class": null,
+  "feature_columns": [
+    "Area",
+    "Perimeter",
+    "MajorAxisLength",
+    "MinorAxisLength",
+    "AspectRation",
+    "Eccentricity",
+    "ConvexArea",
+    "EquivDiameter",
+    "Extent",
+    "Solidity",
+    "roundness",
+    "Compactness",
+    "ShapeFactor1",
+    "ShapeFactor2",
+    "ShapeFactor3",
+    "ShapeFactor4"
+  ],
+  "numeric_columns": [
+    "Area",
+    "Perimeter",
+    "MajorAxisLength",
+    "MinorAxisLength",
+    "AspectRation",
+    "Eccentricity",
+    "ConvexArea",
+    "EquivDiameter",
+    "Extent",
+    "Solidity",
+    "roundness",
+    "Compactness",
+    "ShapeFactor1",
+    "ShapeFactor2",
+    "ShapeFactor3",
+    "ShapeFactor4"
+  ],
+  "categorical_columns": [],
+  "models": {
+    "Logistic Regression": "logistic_regression.joblib",
+    "Decision Tree": "decision_tree.joblib",
+    "KNN": "knn.joblib",
+    "Naive Bayes": "naive_bayes.joblib",
+    "Support Vector Machine": "support_vector_machine.joblib"
+  },
+  "best_params": {
+    "Logistic Regression": {
+      "C": 1000
+    },
+    "Decision Tree": {
+      "criterion": "entropy",
+      "max_depth": 8,
+      "min_samples_leaf": 5
+    },
+    "KNN": {
+      "n_neighbors": 25,
+      "weights": "distance"
+    },
+    "Naive Bayes": {
+      "var_smoothing": 1e-14
+    },
+    "Support Vector Machine": {
+      "C": 10,
+      "gamma": "scale"
+    }
+  },
+  "n_rows_total": 13543,
+  "n_train": 10834,
+  "n_test": 2709,
+  "class_distribution": {
+    "DERMASON": 3546,
+    "SIRA": 2636,
+    "SEKER": 2027,
+    "HOROZ": 1860,
+    "CALI": 1630,
+    "BARBUNYA": 1322,
+    "BOMBAY": 522
+  },
+  "seed": 42,
+  "versions": {
+    "python": "3.12.7",
+    "scikit-learn": "1.9.1",
+    "numpy": "2.5.4",
+    "pandas": "2.2.3",
+    "joblib": "1.4.2"
+  }
+}

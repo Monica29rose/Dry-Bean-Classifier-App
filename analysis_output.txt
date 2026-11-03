@@ -1,0 +1,49 @@
+test rows = 2709
+majority-class baseline: accuracy = 0.2617, MCC = 0 (any model must beat this)
+
+1) GENERALISATION GAP (train accuracy vs test accuracy; CV MCC from tuning)
+                        CV MCC (train)  Train Acc  Accuracy     MCC  Fit time (s)  gap (train-test)
+ML Model Name                                                                                      
+Logistic Regression             0.9104     0.9276    0.9192  0.9023          21.3            0.0084
+Decision Tree                   0.8938     0.9388    0.9085  0.8893          14.2            0.0303
+KNN                             0.9099     1.0000    0.9177  0.9005           7.0            0.0823
+Naive Bayes                     0.8756     0.8972    0.8970  0.8762           1.8            0.0002
+Support Vector Machine          0.9186     0.9397    0.9236  0.9076          49.7            0.0161 
+
+2) PER-CLASS F1 ON THE TEST SET (rows = bean variety)
+          Logistic Regression  Decision Tree    KNN  Naive Bayes  Support Vector Machine
+BARBUNYA                0.914          0.865  0.909        0.832                   0.918
+BOMBAY                  1.000          1.000  1.000        1.000                   1.000
+CALI                    0.920          0.908  0.928        0.889                   0.932
+DERMASON                0.915          0.915  0.914        0.897                   0.919
+HOROZ                   0.952          0.947  0.950        0.950                   0.954
+SEKER                   0.940          0.941  0.939        0.929                   0.949
+SIRA                    0.872          0.851  0.866        0.853                   0.872 
+
+3) MOST FREQUENT CONFUSIONS (true -> predicted : count)
+  Logistic Regression      DERMASON->SIRA: 54; SIRA->DERMASON: 42; BARBUNYA->CALI: 18
+  Decision Tree            SIRA->DERMASON: 68; DERMASON->SIRA: 31; CALI->BARBUNYA: 25
+  KNN                      DERMASON->SIRA: 49; SIRA->DERMASON: 48; BARBUNYA->CALI: 21
+  Naive Bayes              DERMASON->SIRA: 78; BARBUNYA->CALI: 40; SIRA->DERMASON: 32
+  Support Vector Machine   SIRA->DERMASON: 51; DERMASON->SIRA: 43; BARBUNYA->CALI: 15
+
+4) WINNER BY MCC = Support Vector Machine. Significantly better? (exact McNemar test, same test rows)
+  vs Logistic Regression      winner-only-correct=  44 other-only-correct=  32 p=0.2067 -> NOT significant
+  vs Decision Tree            winner-only-correct=  86 other-only-correct=  45 p=0.0004305 -> significant (p<0.05)
+  vs KNN                      winner-only-correct=  50 other-only-correct=  34 p=0.1011 -> NOT significant
+  vs Naive Bayes              winner-only-correct= 131 other-only-correct=  59 p=1.871e-07 -> significant (p<0.05)
+
+   95% bootstrap confidence intervals (1000 resamples of the test set):
+  Logistic Regression      acc [0.9088, 0.9302]  MCC [0.8900, 0.9158]
+  Decision Tree            acc [0.8977, 0.9195]  MCC [0.8762, 0.9029]
+  KNN                      acc [0.9066, 0.9280]  MCC [0.8865, 0.9130]
+  Naive Bayes              acc [0.8859, 0.9085]  MCC [0.8626, 0.8898]
+  Support Vector Machine   acc [0.9140, 0.9336]  MCC [0.8959, 0.9197]
+
+5) DECISION TREE: depth = 8, leaves = 145
+6) TUNED HYPER-PARAMETERS:
+  Logistic Regression      {'C': 1000}
+  Decision Tree            {'criterion': 'entropy', 'max_depth': 8, 'min_samples_leaf': 5}
+  KNN                      {'n_neighbors': 25, 'weights': 'distance'}
+  Naive Bayes              {'var_smoothing': 1e-14}
+  Support Vector Machine   {'C': 10, 'gamma': 'scale'}

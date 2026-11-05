@@ -75,7 +75,7 @@ A future-proof alternative is `CalibratedClassifierCV(SVC(), ensemble=False)`.
 | ML Model Name | Observation about model performance |
 |---|---|
 | Logistic Regression |
-Accuracy 0.9192, MCC 0.9023 and the highest AUC (0.9948) of all five models: a linear (multinomial) boundary already separates most varieties because size 
+The model showed Accuracy 0.9192, MCC 0.9023 and the highest AUC (0.9948) of all five models: a linear (multinomial) boundary already separates most varieties because size 
 and shape features differ systematically between them. The train/test accuracy gap is only 0.008, so it generalises well. CV MCC rises from 0.9001 (C = 0.01)
 to 0.9104 (C = 1000) but is essentially flat from C = 1 upwards (0.9085 to 0.9104, far below the fold standard deviation of about 0.005), so weak regularisation
 is preferred and the optimum at the edge of the grid (C = 1000) is a plateau, not a missed peak. The 15 collinear feature pairs hurt coefficient interpretability

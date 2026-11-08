@@ -1,15 +1,15 @@
 ## a. Problem Statement
 The problem is about differentiation among various types of dry beans. In this problem, there are seven different varieties of dry beans (Seker, Barbunya, Bombay, Cali, Dermason, Horoz, Sira) 
-which look quite similar. Assorting them in different categories takes time and also lacks consistency, is prone to errors. 
+which look quite similar. Sorting them into different categories takes time, lacks consistency and is prone to errors. 
 
-So this project is about prediction of a variety of bean from set of 16 measurements of shape and size extracted by computer-vision system which extracts from a single grain image.
-Hence, it is a **7-Class** Classification problem  with some imbalance in the classes. Such as the largest class is  6.8 times of the smallest. 
+So this project is about prediction of a variety of bean from a set of 16 measurements of shape and size extracted from a single grain image by a computer-vision system.
+Hence, it is a **7-Class** Classification problem  with some imbalance in the classes. The largest class is 6.8 times the size of the smallest.
 
-There no single variety which is "positive", and for all errors of misclassifying are equally costly. So the primary metric is **MCC** (multi-class Matthews correlation),
-which give correct result under imbalance; macro-F1 is the secondary metric. Five classifiers are trained, tuned and compared, and exposed in a Streamlit app.
+There is no single variety which is "positive", and all misclassification errors are equally costly. So the primary metric is **MCC** (multi-class Matthews correlation),
+which gives a reliable score under class imbalance; macro-F1 is the secondary metric. Five classifiers are trained, tuned and compared, and exposed in a Streamlit app.
 
 
-b. Dataset description
+## b. Dataset description
 | Item | Value |
 |---|---|
 | Source | Dry Bean Dataset, UCI Machine Learning Repository (Koklu and Ozkan, 2020, *Computers and Electronics in Agriculture* 174:105507, doi:10.1016/j.compag.2020.105507) |
@@ -71,46 +71,14 @@ SVM RBF, C = 10, gamma = "scale". A majority-class predictor would score accurac
 **Known limitation.** scikit-learn 1.9 deprecates `SVC(probability=True)` (removal planned for 1.11). The project therefore pins scikit-learn to the exact training version. 
 A future-proof alternative is `CalibratedClassifierCV(SVC(), ensemble=False)`.
 
+
 ### Observations on the performance of each model
 | ML Model Name | Observation about model performance |
 |---|---|
-| Logistic Regression |
-The model showed Accuracy 0.9192, MCC 0.9023 and the highest AUC (0.9948) of all five models: a linear (multinomial) boundary already separates most varieties because size 
-and shape features differ systematically between them. The train/test accuracy gap is only 0.008, so it generalises well. CV MCC rises from 0.9001 (C = 0.01)
-to 0.9104 (C = 1000) but is essentially flat from C = 1 upwards (0.9085 to 0.9104, far below the fold standard deviation of about 0.005), so weak regularisation
-is preferred and the optimum at the edge of the grid (C = 1000) is a plateau, not a missed peak. The 15 collinear feature pairs hurt coefficient interpretability
-but not prediction. It is the smallest and simplest model (3 KB). |
-
-| Decision Tree | 
-Weakest of the discriminative models (accuracy 0.9085, MCC 0.8893) and the lowest AUC (0.9774): a depth-8 tree (145 leaves) makes axis-parallel cuts,
-which fit the diagonal class boundaries created by correlated shape features poorly, and its leaf-frequency probabilities are coarse, which hurts ranking-based AUC.
-Train/test gap 0.030 shows mild over-fitting even after limiting depth. Lowest Sira F1 of all models (0.851) and a weak Barbunya F1 (0.865). Significantly worse than 
-the SVM (McNemar p = 0.0004). Its advantage is interpretability. |
-
-| KNN |
-Within 0.002 of Logistic Regression (accuracy 0.9177, MCC 0.9005). Standardisation was essential because distance is dominated by the largest-scale feature 
-(Area is about 5x10^4 while ratio features are about 1). k = 25 with distance weighting is an interior optimum (k = 41 and 61 were not better). The training 
-accuracy of 1.0 is an artefact of distance weighting (each training point is its own nearest neighbour), so the CV MCC (0.9099) is the honest estimate and agrees
-with the test MCC. It must store the whole training set (1.3 MB) and scan it at prediction time, so its cost grows with the data. |
-
-| Naive Bayes | 
-Lowest scores (accuracy 0.897, MCC 0.8762) because its conditional-independence assumption is badly violated: 15 feature pairs have abs(r) > 0.95 (Area-ConvexArea r = 0.9999),
-so the same evidence is counted several times. It makes the most Dermason-to-Sira errors (78) and has the lowest Barbunya F1 (0.832). Its AUC is still high (0.9911),
-i.e. it ranks classes well but its probabilities are poorly calibrated. The train/test gap is about 0 (high bias, not over-fitting) and var_smoothing has no effect (all ten values 
-give CV MCC 0.8756) because the features are standardised. Fastest to train. 
-
-|| Support Vector Machine | 
-Best accuracy (0.9236), precision, recall, F1 (0.9347) and MCC (0.9076), and the best CV MCC (0.9186); only AUC is marginally below Logistic Regression (0.9944 vs 0.9948).
-The RBF kernel models the non-linear overlap between neighbouring varieties; C = 10, gamma = "scale" is an interior optimum. Costs: the slowest tuning/fit (about 50 s of 
-tuning and fitting, including Platt-scaling probabilities) and a larger file (264 KB). 
-
-| Overall, Winner for out dataset? | 
-**Support Vector Machine**, chosen on MCC (0.9076 vs 0.9023 for Logistic Regression and 0.9005 for KNN), with consistent support from accuracy (0.9236), macro-F1 (0.9347) 
-and the best CV MCC (0.9186 vs 0.9104 and 0.9099), and a small train/test gap (0.016). The margin is modest and should not be over-claimed: an exact McNemar test on the same
-2,709 test beans shows the SVM is significantly better than Decision Tree (p = 0.0004) and Naive Bayes (p = 2e-7) but **not** significantly better than Logistic Regression (p = 0.207)
-or KNN (p = 0.101), and the 95% bootstrap intervals of the top three models overlap (MCC: SVM 0.896-0.920, LR 0.890-0.916, KNN 0.887-0.913). If speed, simplicity and model size matter
-more than the last 0.5 points of accuracy, Logistic Regression is the pragmatic choice. The largest confusion in every model is Dermason versus Sira, followed by Barbunya versus Cali;
-Sira has the lowest F1 for four of the five models (0.851-0.872; for Naive Bayes, Barbunya is lower at 0.832), while Bombay is recognised perfectly by all five models (F1 = 1.000) 
-because its mean area (173,485 px) is 2.3 times that of the next-largest variety (Cali, 75,538 px). |
-
+| Logistic Regression | The model showed an accuracy of 0.9192, an MCC of 0.9023 and the highest AUC (0.9948) across all five classifiers. This shows that the size and shape features give sufficient information to differentiate most bean varieties by using a linear decision boundary. The training-test accuracy gap is small, 0.008, which suggests that generalisation is good.<br><br>Cross-validation demonstrated that MCC values increased from 0.9001 at C = 0.01 to 0.9104 at C = 1000, but remained almost stable beyond C = 1 (0.9085–0.9104). As this variation is small compared with the fold standard deviation of approximately 0.005, the result at C = 1000 shows a performance plateau instead of a substantial improvement. Although 15 pairs of correlated features may influence coefficient interpretation, predictive performance remains strong. With a storage requirement of approximately 3 KB, Logistic Regression is also the smallest model. |
+| Decision Tree | The Decision Tree model shows an accuracy of 0.9085 and an MCC of 0.8893, which makes it the second-weakest of the five classifiers (only Naive Bayes scored lower). It also achieved the lowest AUC (0.9774). The depth-8 tree, with 145 leaves, uses axis-parallel splits, which may not capture the diagonal class boundaries associated with correlated shape features effectively. Its leaf-based probability estimates are also relatively coarse, which influences the AUC. The training–test accuracy gap of 0.030 shows some overfitting despite the depth restriction. The model also showed the lowest Sira F1-score of all five models (0.851) and a relatively weak score for Barbunya (0.865). Its performance was significantly poorer than SVM according to the McNemar test (p = 0.0004). However, its main advantage is interpretability, as the decision rules can be examined and explained. |
+| KNN | The performance of the KNN model was close to Logistic Regression, with an accuracy of 0.9177 and an MCC of 0.9005. Standardisation was important because the features have different scales; without it, larger values such as Area (approximately 5 × 10⁴) would dominate the distance calculations. The selected value of k = 25 with distance weighting provided the best result, while higher values of k (41 and 61) did not enhance performance. Although training accuracy was 1.0, this is an artefact of distance weighting, as each training observation is its own nearest neighbour. Therefore, the CV MCC of 0.9099 gives a more reliable estimate and is consistent with the test MCC. However, KNN requires storing the complete training dataset (approximately 1.3 MB) and calculating distances during prediction, making it more computationally expensive as the dataset increases. |
+| Naive Bayes | The Naive Bayes model provided the lowest accuracy (0.897) and MCC (0.8762) of all five classifiers. Its performance is likely influenced by the conditional-independence assumption, as 15 feature pairs have absolute correlations above 0.95, including Area and ConvexArea (r = 0.9999). This may result in correlated information being counted repeatedly. The model also made the highest number of Dermason-to-Sira errors (78) and recorded the lowest Barbunya F1-score (0.832). Despite all of this, its AUC of 0.9911 shows good class ranking, although its probability estimates may be poorly calibrated. The negligible training–test gap suggests high bias rather than overfitting. Further, var_smoothing had no influence on CV MCC (0.8756 across all ten values), and Naive Bayes was the fastest model to train. |
+| Support Vector Machine | The Support Vector Machine (SVM) recorded the best overall performance, with the highest accuracy (0.9236), precision, recall, F1-score (0.9347) and MCC (0.9076). It also achieved the highest cross-validation MCC (0.9186). Its AUC of 0.9944 was marginally below Logistic Regression (0.9948). The RBF kernel helps capture the non-linear overlap between neighbouring bean varieties, with C = 10 and gamma = "scale" showing the best parameter combination. However, SVM required the longest tuning and fitting time (approximately 50 seconds, including probability calibration using Platt scaling) and produced a larger model file (264 KB). |
+| Overall, Winner for your dataset? | **Support Vector Machine** is the preferred model, with the highest MCC (0.9076), accuracy (0.9236), macro-F1 (0.9347) and CV MCC (0.9186). Its advantage over Logistic Regression (MCC 0.9023) and KNN (0.9005) is relatively small. The McNemar test confirms that SVM performs significantly better than Decision Tree (p = 0.0004) and Naive Bayes (p = 2e-7), but not significantly better than Logistic Regression (p = 0.207) or KNN (p = 0.101). This is also reflected in the overlapping 95% bootstrap MCC intervals for the top three models. Therefore, SVM is the overall winner, but Logistic Regression remains a practical alternative when simplicity, speed and smaller model size are priorities.<br><br>Across the models, the most frequent confusion is between Dermason and Sira, followed by Barbunya and Cali. Sira has the lowest F1-score in four models (0.851–0.872), while Barbunya has the lowest score for Naive Bayes (0.832). In contrast, all five models classify Bombay perfectly (F1 = 1.000), possibly because its mean area (173,485 px) is substantially higher than that of the next-largest variety, Cali (75,538 px). |
 

@@ -60,9 +60,9 @@ Evaluation on the hold-out test set (2,709 beans):
 |---|---|---|---|---|---|---|
 | Logistic Regression | 0.9192 | 0.9948 | 0.9309 | 0.9304 | 0.9305 | 0.9023 |
 | Decision Tree | 0.9085 | 0.9774 | 0.9203 | 0.9163 | 0.9181 | 0.8893 |
-| KNN | 0.9177 | 0.9918 | 0.932 | 0.9277 | 0.9294 | 0.9005 |
-| Naive Bayes | 0.897 | 0.9911 | 0.9081 | 0.9082 | 0.9072 | 0.8762 |
-| Support Vector Machine | 0.9236 | 0.9944 | 0.9356 | 0.934 | 0.9347 | 0.9076 |
+| KNN | 0.9177 | 0.9918 | 0.9320 | 0.9277 | 0.9294 | 0.9005 |
+| Naive Bayes | 0.8970 | 0.9911 | 0.9081 | 0.9082 | 0.9072 | 0.8762 |
+| Support Vector Machine | 0.9236 | 0.9944 | 0.9356 | 0.9340 | 0.9347 | 0.9076 |
 
 Tuned hyper-parameters (5-fold CV, MCC): Logistic Regression C = 1000; Decision Tree entropy, max_depth = 8,
 min_samples_leaf = 5; KNN k = 25, distance-weighted; Naive Bayes var_smoothing = 1e-14 (all ten values tie);
